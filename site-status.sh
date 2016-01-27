@@ -47,7 +47,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 site_list="$DIR/site_list"
 ping_test="ping -c 1 -w1"
 status_page="$DIR/status.html"
-log="$DIR/availability.log"
+log="$DIR/site-status.log"
 now=$(date +"%D")
 
 
