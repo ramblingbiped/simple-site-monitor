@@ -53,7 +53,7 @@ now=$(date +"%D")
 
 # Check if all necessary file/package dependecies are met 
 if [[ ! -s $site_list ]]; then
-    /bin/echo "No sites to monitor!  Please create a line-by-line list of sites in the $site_list file!"
+    /usr/bin/printf "No sites to monitor!  Please create a line-by-line list of sites in the %s file!" $site_list
     exit 1
 fi
 
