@@ -45,17 +45,13 @@
 # Variable declarations
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 site_list="$DIR/site_list"
-ping_test="fping -c 1"
+ping_test="ping -c 1 -w1"
 status_page="$DIR/status.html"
 log="$DIR/availability.log"
+now=$(date +"%D")
 
 
 # Check if all necessary file/package dependecies are met 
-if [[ $(dpkg -s fping | grep Status | awk '{print $4}') != "installed" ]]; then
-    /bin/echo "Please install fping to use this script..."
-    exit 1
-fi
-
 if [[ ! -s $site_list ]]; then
     /bin/echo "No sites to monitor!  Please create a line-by-line list of sites in the $site_list file!"
     exit 1
@@ -68,22 +64,29 @@ do
     fi
 done
 
-# Clear status page before updating
-/bin/echo "" > $status_page
-/bin/echo "<br />" >> $status_page
-/bin/echo "<br />" >> $status_page
-/bin/echo "<br />" >> $status_page
+#Clear status page before updating
+/usr/bin/printf "" > $status_page
+/usr/bin/printf "<br />\n" >> $status_page
+/usr/bin/printf "<br />\n" >> $status_page
+/usr/bin/printf "<br />\n" >> $status_page
 
 # Process site availability checks and update status_page
 while read line; do
     $ping_test $line
     result=$?
     if [[ $result -eq 0 ]]; then
-        /bin/echo "<h2 style=\"color:green; text-align:center;\"><b>$line</b> is currently available!</h2>" >> $status_page
-        /bin/echo $(date) "$line is up!" >> $log
+        /usr/bin/printf  "%s %s is up!\n" $now $line >> $log
+        curlTest=$(curl -Is -m 2 http://$line | head -n 1)
+        if [[ $curlTest == *"TTP/1.1 200 OK"* ]]; then
+            /usr/bin/printf "<h2 style=\"color:green; text-align:center;\">Host <b>%s</b> is currently available and the webserver status is:  <b><u>%s</u></b> </h2>\n" $line "200 OK!" >> $status_page
+            /usr/bin/printf "     %s webserver response is: %s\n\n" $line "200 OK!" >> $log
+        else
+            /usr/bin/printf "<h2 style=\"color:green; text-align:center;\">Host <b>%s</b> is currently available, but webserver status is currently not favorable...  <b style=\"color:red;\">Best look into things!</b> </h2>\n" $line >> $status_page
+            /usr/bin/printf "---> %s webserver response is not favorable...  Best look into things!\n\n" $line >> $log
+        fi
     else
-        /bin/echo "<h2 style=\"color:red; text-align:center;\"><b>$line</b> is currently unavailable!</h2>" >> $status_page
-        /bin/echo "---> " $(date) "$line is down! ***" >> $log
+        /usr/bin/printf  "<h2 style=\"color:red; text-align:center;\">Host <b>%s</b> is currently unavailable!</h2>\n" $line >> $status_page
+        /usr/bin/printf "---> %s %s is down! ***\n\n" $now $line >> $log
     fi
 done < $site_list
 
