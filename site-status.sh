@@ -66,9 +66,7 @@ done
 
 #Clear status page before updating
 /usr/bin/printf "" > $status_page
-/usr/bin/printf "<br />\n" >> $status_page
-/usr/bin/printf "<br />\n" >> $status_page
-/usr/bin/printf "<br />\n" >> $status_page
+/usr/bin/printf "<br />\n<br />\n<br />\n" >> $status_page
 
 # Process site availability checks and update status_page
 while read line; do
