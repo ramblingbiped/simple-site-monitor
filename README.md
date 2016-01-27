@@ -22,10 +22,12 @@ update status to a very simple web page(status.html), as well as generate an ava
 log for tracking length of any outages.
 
 This script is meant to be implemented via a Cron task using whatever interval
-of time deemed necessary. The script uses the fping package to do a quick test evaluate
-the availability of a site and reports results to a simple webpage and availability log.
+of time deemed necessary. The script uses ping to evaluate the availability 
+of a site. If the site is available, it will then use curl to evaluate the status 
+of the webserver running on the site.  The results of the availability test and
+webserver test are output to a simple HTML file, as well as a log file.
 
-Upon launch the script checks to see if the fping package is installed, verifies
-that all of the necessary files exist, and verifies the site_list text file is not empty.
+Upon launch the script verifies that all of the necessary files exist, and verifies 
+the site_list text file is not empty.
 
 
